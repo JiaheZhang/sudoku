@@ -1,5 +1,7 @@
 #include<iostream>
 #include<vector>
+#include<deque>
+
 
 using namespace std;
 
@@ -26,17 +28,22 @@ struct Point
 	}
 	int rows;
 	int cols;
-	int value[10] = {0,1,2,3,4,5,6,7,8,9}; // maybe value
+	vector<int> value; // maybe value
 };
 
-typedef vector<Point> pointVec;
+typedef deque<Point> pointVec;
 
 pointVec p;
 
 void getMaybeValue()
 {
-	for(vector<Point>::iterator it = p.begin();it != p.end();it++)
+	deque<Point>::iterator it = p.begin();
+	while(it != p.end())
 	{
+		for(int i = 0;i < 10;i++)
+		{
+			(*it).value.push_back(i);
+		}
 		for(int i = 0;i < 9;i++)
 		{
 			it->value[A[it->rows][i]] = 0;
@@ -54,9 +61,49 @@ void getMaybeValue()
 			it->value[A[tempCols + 1][i + tempRows]] = 0;
 			it->value[A[tempCols + 2][i + tempRows]] = 0;
 		}
+		vector<int>::iterator itValue = (*it).value.begin();
+		while(itValue != (*it).value.end())
+		{
+			if(*itValue == 0)
+			{
+				(*it).value.erase(itValue);
+			}
+			else
+			{
+				itValue++;
+			}
+		} 
+		vector<int>((*it).value).swap((*it).value);//free the memory
+		
+		if((*it).value.size() == 1)
+		{
+			A[(*it).rows][(*it).cols] = (*it).value[0];
+			p.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+		
 	}
 	
 }
+
+void display(void)
+{
+	for(int i = 0;i < 9;i++)
+	{
+		for(int j = 0;j < 9;j++)
+		{
+			cout<<A[i][j];
+			if(j == 2 || j == 5 || j == 8)
+			cout<<"|";
+		}
+		cout<<endl;
+		if(i == 2 || i == 5)
+		cout<<"------------"<<endl;
+	}
+} 
 
 int main()
 {
@@ -72,11 +119,12 @@ int main()
 	}
 	/**************check the number needed to fill****************/
 	getMaybeValue();
-
-	for(int i = 0;i < 10;i++)
-	{
-		cout<<p[0].value[i]<<endl;
-	}
+	display();
+//	for(int i = 0;i < p[0].value.size();i++)
+//	{
+//		cout<<p[0].value[i]<<endl;
+//	}
+//	cout<<p[0].value.size()<<" "<<p[0].value.capacity();
 	
 	
 	return 0;
